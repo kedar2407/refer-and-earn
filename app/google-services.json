@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "936489296338",
+    "firebase_url": "https://my-dream-bdb3d.firebaseio.com",
+    "project_id": "my-dream-bdb3d",
+    "storage_bucket": "my-dream-bdb3d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:936489296338:android:5cedb2509a19dd96b0680b",
+        "android_client_info": {
+          "package_name": "com.example.mydream"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "936489296338-5ineqvdk9cgg8ab03agovq951qetp2u6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJDYnTTjqe1JgAYBmDpu_O8HZD4MiKibg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "936489296338-5ineqvdk9cgg8ab03agovq951qetp2u6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
