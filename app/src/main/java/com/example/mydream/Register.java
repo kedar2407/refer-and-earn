@@ -1,10 +1,5 @@
 package com.example.mydream;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,8 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +16,6 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,12 +23,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -47,9 +45,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
-import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,14 +56,13 @@ public class Register extends AppCompatActivity {
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
     String UserId, refferal, refree, cutid;
-
-    Button btn;
+    FirebaseUser firebaseUser;
+    TextView createtv;
     String TAG = "splash";
     static int count;
     private DatabaseReference userDb;
     public DatabaseReference userDbref;
     ImageView profileImageView;
-    Map<String, Object> user = new HashMap<>();
     Map<String, Object> refer = new HashMap<>();
 
     StorageReference storageReference;
@@ -92,7 +87,8 @@ public class Register extends AppCompatActivity {
         mProgressDialog = new ProgressDialog(this);
         userDb = FirebaseDatabase.getInstance().getReference().child("users");
         userDbref = FirebaseDatabase.getInstance().getReference().child("refers");
-
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        createtv=findViewById(R.id.createcctv);
 //from here iam handeling the refer link
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())
@@ -100,7 +96,7 @@ public class Register extends AppCompatActivity {
                     @Override
                     public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
                         // Get deep link from result (may be null if no link is found)
-                        Uri deepLink = null; to
+                        Uri deepLink = null;
                         if (pendingDynamicLinkData != null) {
                             deepLink = pendingDynamicLinkData.getLink();
 
@@ -111,8 +107,10 @@ public class Register extends AppCompatActivity {
 
                                 referlink = referlink.substring(referlink.lastIndexOf("=") + 1);
                                 Log.e(TAG, " substring " + referlink); //cust123-prod456
-
                                 cutid = referlink.substring(0, referlink.indexOf("-"));
+
+//                                createtv.setText(cutid);
+
 //here is the string valuews of 1st users
 
                                 Log.e(TAG, " custid " + cutid + "----prpdiid ");
@@ -166,11 +164,12 @@ public class Register extends AppCompatActivity {
             }
         });
 
-//        this is the Button where i want to implement the action
+////        this is the Button where i want to implement the action
         mRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                final Map<String, Object> user = new HashMap<>();
 
                 final String name = mFullName.getText().toString().trim();
 //                these are new users data
@@ -178,6 +177,7 @@ public class Register extends AppCompatActivity {
                 final String pass = mPassword.getText().toString().trim();
                 final String mobile = mPhone.getText().toString().trim();
                 final String cPass = cpassword.getText().toString().trim();
+                final String preuser =cutid.toString();
                 if (TextUtils.isEmpty(email)) {
                     mEmail.setError("Please Enter Email ");
                     return;
@@ -208,14 +208,17 @@ public class Register extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(Register.this, "user Created", Toast.LENGTH_SHORT).show();
-                            UserId = fAuth.getCurrentUser().getUid();
+                            UserId = fAuth.getUid();
+
+                            String id="aaaaaadf@ddhj.in";
                             DocumentReference documentReference = fStore.collection("users").document(UserId);
+
                             user.put("fname", name);
                             user.put("email", email);
                             user.put("pass", cPass);
-//                            here im putting new users data to firestore this saves new users data to firestore
 
-                            documentReference.child(UserId).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                            here im putting new users data to firestore
+                            documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Toast.makeText(Register.this, "adedd", Toast.LENGTH_SHORT).show();
@@ -226,6 +229,12 @@ public class Register extends AppCompatActivity {
                                     Toast.makeText(Register.this, e.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             });
+
+//                          iam Unable to put (cutid) String to firebase  i want to create database with below code and put data to firebase like
+//                           of who refered whom and get show it
+
+//                            FirebaseDatabase.getInstance().getReference().child("whoReffered").
+//                                    child("userid2").child(cutid).child(firebaseUser.getEmail());
 
 
 //                                checkForPermission();
@@ -240,7 +249,6 @@ public class Register extends AppCompatActivity {
 
             }
         });
-
 
         Button adhar = findViewById(R.id.adhar);
         adhar.setOnClickListener(new View.OnClickListener() {
@@ -299,7 +307,7 @@ public class Register extends AppCompatActivity {
     public boolean checkPermissionREAD_EXTERNAL_STORAGE(
             final Context context) {
         int currentAPIVersion = Build.VERSION.SDK_INT;
-        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
+        if (currentAPIVersion >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context,
                     Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(
