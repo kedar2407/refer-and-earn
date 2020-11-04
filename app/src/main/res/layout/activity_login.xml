@@ -9,9 +9,6 @@
     android:id="@+id/relmain"
     tools:context=".MainActivity">
 
-    <!--Shreyas Vilaschandra Bhike     -->
-    <!-- Use gradientImage / gradient for background   -->
-    <!--Twitter Redesigned Theme    -->
 
     <RelativeLayout
         android:layout_width="wrap_content"
